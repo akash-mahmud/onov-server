@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,438 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String
+model copy_tbl_law {
+  id           Int      @id @default(autoincrement())
+  userRef      String   @db.VarChar(150)
+  lawTitle     String   @db.VarChar(200)
+  description  String   @db.Text
+  documentFile String   @db.Text
+  documentType String   @db.Text
+  created_at   DateTime @db.DateTime(0)
+  updated_at   DateTime @db.DateTime(0)
+}
+
+model copy_tbl_request_donation {
+  id                Int      @id @default(autoincrement())
+  userRef           String   @db.VarChar(50)
+  donationRequestId Int
+  created_at        DateTime @db.DateTime(0)
+  updated_at        DateTime @db.DateTime(0)
+}
+
+model keys {
+  id             Int      @id @default(autoincrement())
+  user_id        Int
+  key            String   @db.VarChar(40)
+  level          Int
+  ignore_limits  Boolean  @default(false)
+  is_private_key Boolean  @default(false)
+  ip_addresses   String?  @db.Text
+  date_created   DateTime @db.DateTime(0)
+}
+
+model tbl_aboutApp {
+  id              Int      @id @default(autoincrement())
+  privacyPolicy   String   @db.LongText
+  termsConditions String   @db.LongText
+  aboutUS         String   @db.LongText
+  created_at      DateTime @db.DateTime(0)
+  updated_at      DateTime @db.DateTime(0)
+}
+
+model tbl_chat {
+  id          Int      @id @default(autoincrement())
+  fromRef     String   @db.VarChar(150)
+  toRef       String   @db.VarChar(150)
+  lastMessage String   @default("") @db.VarChar(250)
+  lastSender  String   @default("") @db.VarChar(250)
+  msgCount    Int      @default(0)
+  create_at   DateTime @db.DateTime(0)
+  update_at   DateTime @db.DateTime(0)
+}
+
+model tbl_chatHistory {
+  id          Int      @id @default(autoincrement())
+  chatRef     String   @db.VarChar(150)
+  orderNumber String   @db.VarChar(150)
+  senderRef   String   @db.VarChar(150)
+  receiverRef String   @db.VarChar(150)
+  userType    String   @db.VarChar(150)
+  message     String   @db.VarChar(250)
+  chatImage   String   @db.VarChar(250)
+  created_at  DateTime @db.DateTime(0)
+}
+
+model tbl_comment {
+  id              Int      @id @default(autoincrement())
+  parentCommentId Int
+  commentTo       Int
+  commentFrom     String   @db.VarChar(30)
+  comment         String   @db.VarChar(200)
+  conmmentOn      String   @db.VarChar(15)
+  created_at      DateTime @db.DateTime(0)
+  updated_at      DateTime @db.DateTime(0)
+}
+
+model tbl_comment_like {
+  id         Int      @id @default(autoincrement())
+  recordId   Int
+  likeFrom   String   @db.VarChar(50)
+  type       Int?
+  likeFor    String   @db.VarChar(15)
+  create_at  DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_debate {
+  id             Int      @id @default(autoincrement())
+  userRef        String   @db.VarChar(150)
+  meetingId      String   @db.VarChar(150)
+  topic          String   @db.VarChar(150)
+  title          String   @db.VarChar(150)
+  message        String   @db.VarChar(200)
+  areaLimit      String   @default("") @db.VarChar(200)
+  isPublic       Int?     @default(0)
+  hostLive       Int?     @default(0)
+  coverImage     String   @db.VarChar(200)
+  date           DateTime @db.Date
+  time           DateTime @db.Time(0)
+  debateDuration DateTime @db.Time(0)
+  requestedUsers String   @db.Text
+  created_at     DateTime @db.DateTime(0)
+  updated_at     DateTime @db.DateTime(0)
+}
+
+model tbl_debateWinnerRecord {
+  id           Int      @id @default(autoincrement())
+  debateId     Int
+  winnerRef    String   @db.VarChar(100)
+  rank         Int
+  debateResult String   @db.VarChar(15)
+  created_at   DateTime @db.DateTime(0)
+  updated_at   DateTime @db.DateTime(0)
+}
+
+model tbl_debate_comment {
+  comment_id            Int       @id @default(autoincrement())
+  comment_from          String?   @db.VarChar(255)
+  comment_to            String?   @db.VarChar(255)
+  debate_id             Int?
+  created_at            DateTime? @default(now()) @db.DateTime(0)
+  updated_at            DateTime? @db.DateTime(0)
+  messages              String?   @db.Text
+  optional              String?   @db.Text
+  comment_from_fullName String?   @db.VarChar(255)
+}
+
+model tbl_debate_request {
+  id            Int      @id @default(autoincrement())
+  debateId      Int
+  userRefTo     String   @db.VarChar(150)
+  userRefFrom   String   @db.VarChar(150)
+  requestStatus String   @default("requested") @db.VarChar(255)
+  isMute        Int?     @default(0)
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+}
+
+model tbl_debaterVote {
+  id         Int      @id @default(autoincrement())
+  debateId   Int
+  voteBy     String   @db.VarChar(50)
+  voteTo     String   @db.VarChar(50)
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_donate {
+  id         Int      @id @default(autoincrement())
+  dobavteTo  Int
+  donnersId  Int
+  amount     Int
+  donnerType String   @db.VarChar(150)
+  created_at DateTime @db.DateTime(0)
+  update_at  DateTime @db.DateTime(0)
+}
+
+model tbl_donation {
+  id         Int      @id @default(autoincrement())
+  donorRef   String   @db.VarChar(100)
+  toRef      String   @db.VarChar(100)
+  receiptId  String   @db.VarChar(150)
+  amount     Int
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_donationTagPeople {
+  id         Int      @id @default(autoincrement())
+  donationId Int
+  peopleRef  String   @default("") @db.VarChar(50)
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_event {
+  id            Int      @id @default(autoincrement())
+  userRef       String   @db.VarChar(150)
+  title         String   @db.VarChar(200)
+  price         Int
+  start_date    DateTime @db.Date
+  start_time    DateTime @db.Time(0)
+  end_date      DateTime @db.Date
+  end_time      DateTime @db.Time(0)
+  description   String   @db.VarChar(255)
+  cover_image   String   @db.VarChar(255)
+  ent_video     String   @db.VarChar(255)
+  purchaseCount Int      @default(0)
+  areaLimit     String   @db.VarChar(255)
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+}
+
+model tbl_feed {
+  id           Int      @id @default(autoincrement())
+  recordType   String   @db.VarChar(100)
+  recordId     Int
+  userRef      String   @db.VarChar(100)
+  title        String   @db.VarChar(255)
+  description  String   @db.VarChar(255)
+  filePath     String   @db.VarChar(255)
+  fileType     String   @db.VarChar(100)
+  isShared     Int?     @default(0)
+  donationGoal String   @db.VarChar(100)
+  petitionId   Int
+  areaLimit    String?  @db.VarChar(255)
+  created_at   DateTime @db.DateTime(0)
+  updated_at   DateTime @db.DateTime(0)
+}
+
+model tbl_follow {
+  id         Int      @id @default(autoincrement())
+  userRef    String   @db.VarChar(100)
+  followRef  String   @db.VarChar(100)
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_govtData {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(150)
+  picture        String   @db.VarChar(250)
+  party          String   @db.VarChar(150)
+  state          String   @db.VarChar(150)
+  role           String   @db.VarChar(150)
+  contactInfo    String   @default("") @db.VarChar(150)
+  officeLocation String   @default("") @db.VarChar(250)
+  created_at     DateTime @db.DateTime(0)
+  updated_at     DateTime @db.DateTime(0)
+}
+
+model tbl_invite {
+  invite_id                     Int       @id @default(autoincrement())
+  invite_topic                  String?   @db.VarChar(255)
+  invite_date                   DateTime? @db.Date
+  invite_starttime              DateTime? @db.Time(0)
+  invite_endtime                DateTime? @db.Time(0)
+  invite_feature_image          String?   @db.VarChar(255)
+  invite_moderator_style_type   String?   @db.VarChar(255)
+  invite_moderator_style_person String?   @db.VarChar(255)
+  invite_opposition             String?   @db.VarChar(255)
+  invite_from                   String?   @db.VarChar(255)
+  invite_addbysytem             String?   @db.VarChar(255)
+  invite_created                DateTime? @db.DateTime(0)
+  invite_updated                DateTime? @db.DateTime(0)
+}
+
+model tbl_invite_request {
+  id            Int      @id @default(autoincrement())
+  inviteId      Int
+  userRefTo     String   @db.VarChar(150)
+  userRefFrom   String   @db.VarChar(150)
+  requestStatus String   @default("requested") @db.VarChar(255)
+  isMute        Int?     @default(0)
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+}
+
+model tbl_judicial {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(150)
+  appointmentBy   String   @db.VarChar(150)
+  memberPic       String   @db.VarChar(255)
+  dob             DateTime @db.Date
+  age             Int
+  scv             String   @db.VarChar(50)
+  appointmentDate DateTime @db.Date
+  created_at      DateTime @db.DateTime(0)
+  updated_at      DateTime @db.DateTime(0)
+}
+
+model tbl_like {
+  id         Int      @id @default(autoincrement())
+  recordId   Int
+  likeFrom   String   @db.VarChar(50)
+  type       Int?
+  likeFor    String   @db.VarChar(15)
+  create_at  DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_msg {
+  id     Int       @id @default(autoincrement())
+  msg    String?   @db.Text
+  date   DateTime? @db.DateTime(0)
+  status Int?
+}
+
+model tbl_notification {
+  id               Int      @id @default(autoincrement())
+  notifyTo         String   @db.VarChar(150)
+  notifyFrom       String   @db.VarChar(150)
+  notificationText String   @db.VarChar(250)
+  seen             Int      @default(1)
+  type             String   @default("") @db.VarChar(50)
+  create_at        DateTime @db.DateTime(0)
+  update_at        DateTime @db.DateTime(0)
+}
+
+model tbl_petition {
+  id            Int      @id @default(autoincrement())
+  userRef       String   @db.VarChar(150)
+  title         String   @db.VarChar(255)
+  discription   String   @db.Text
+  websiteLink   String   @db.Text
+  signCount     Int      @default(0)
+  getSignCount  Int      @default(0)
+  duration      String   @default("") @db.VarChar(20)
+  location      String   @default("") @db.VarChar(200)
+  areaLimit     String?  @db.VarChar(255)
+  petitionMedia String   @db.VarChar(250)
+  mediaType     String   @db.VarChar(250)
+  expiryDate    DateTime @db.Date
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+}
+
+model tbl_polling {
+  id            Int      @id @default(autoincrement())
+  createBy      String   @db.VarChar(50)
+  title         String   @db.VarChar(250)
+  options       String   @db.VarChar(250)
+  tillDateTime  DateTime @db.DateTime(0)
+  areaLimit     String?  @db.VarChar(255)
+  pollEndStatus Int?     @default(0)
+  isPublic      Int?     @default(0)
+  isMultiple    Int?     @default(0)
+  pollImage     String   @default("") @db.VarChar(255)
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+}
+
+model tbl_pollingResult {
+  id         Int      @id @default(autoincrement())
+  pollingId  Int
+  pollByRef  String   @db.VarChar(50)
+  pollOption String   @db.VarChar(200)
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_purchaseRecord {
+  id            Int      @id @default(autoincrement())
+  productId     Int
+  userRef       String   @db.VarChar(150)
+  ticketCount   Int
+  transactionID String   @db.VarChar(150)
+  totalAmt      Int
+  is_showing    Int?
+  create_at     DateTime @db.DateTime(0)
+  update_at     DateTime @db.DateTime(0)
+}
+
+model tbl_reportUser {
+  id           Int      @id @default(autoincrement())
+  user_ref     String   @db.VarChar(100)
+  reported_ref String   @db.VarChar(100)
+  is_block     Int?
+  reason       String   @db.VarChar(255)
+  created_at   DateTime @db.DateTime(0)
+  updated_at   DateTime @db.DateTime(0)
+}
+
+model tbl_signPetitionInfo {
+  id           Int      @id @default(autoincrement())
+  userRef      String   @db.VarChar(150)
+  petitionId   Int
+  signImageUrl String   @db.VarChar(255)
+  created_at   DateTime @db.DateTime(0)
+  updated_at   DateTime @db.DateTime(0)
+}
+
+model tbl_social_media_accs {
+  id         Int      @id @default(autoincrement())
+  userRef    String   @db.VarChar(100)
+  instagram  String   @default("") @db.VarChar(255)
+  twitter    String   @default("") @db.VarChar(255)
+  facebook   String   @default("") @db.VarChar(255)
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_totalVoteByArea {
+  id         Int      @id @default(autoincrement())
+  userRef    String   @db.VarChar(150)
+  area       String?  @db.VarChar(255)
+  totalVote  Int
+  rank       String   @default("") @db.VarChar(20)
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model tbl_user {
+  id               Int      @id @default(autoincrement())
+  role             String?  @db.VarChar(255)
+  userRef          String   @db.VarChar(150)
+  fullName         String   @db.VarChar(200)
+  email            String   @db.VarChar(200)
+  countryCode      String   @db.VarChar(200)
+  phone            String   @db.VarChar(20)
+  password         String   @db.VarChar(250)
+  notification     Int?     @default(1)
+  donationsVisible Int?     @default(1)
+  profilePic       String   @db.VarChar(200)
+  coverPhoto       String   @db.VarChar(200)
+  about            String   @db.Text
+  webUrl           String   @db.VarChar(255)
+  countryName      String   @db.VarChar(150)
+  stateName        String   @db.VarChar(150)
+  cityName         String   @db.VarChar(150)
+  politicalParty   String   @db.VarChar(150)
+  deviceType       String   @db.VarChar(200)
+  deviceToken      String   @db.VarChar(200)
+  loginStatus      Int?     @default(0)
+  Is_Active        Int?     @default(0)
+  validationCode   String?  @db.VarChar(200)
+  followCount      Int?     @default(0)
+  reportCount      Int?     @default(0)
+  is_block         Int?     @default(0)
+  created_at       DateTime @db.DateTime(0)
+  updated_at       DateTime @db.DateTime(0)
+}
+
+model tbl_vote {
+  id        Int      @id @default(autoincrement())
+  voteTo    Int
+  voteBy    String   @db.VarChar(150)
+  create_at DateTime @db.DateTime(0)
+  update_at DateTime @db.DateTime(0)
+}
+
+model tbl_winning {
+  id        Int      @id @default(autoincrement())
+  debateId  Int
+  winnerRef String   @db.VarChar(150)
+  create_at DateTime @db.DateTime(0)
+  update_at DateTime @db.DateTime(0)
 }
