@@ -138,13 +138,13 @@ model tbl_debate_request {
   userRefFrom   String   @db.VarChar(150)
   requestStatus String   @default("requested") @db.VarChar(255)
   isMute        Int?     @default(0)
-  created_at    DateTime @db.DateTime(0)
-  updated_at    DateTime @db.DateTime(0)
+  created_at    DateTime @db.DateTime(0)  @default(now())
+  updated_at    DateTime @db.DateTime(0) @updatedAt
 }
 
 model tbl_debaterVote {
   id         Int      @id @default(autoincrement())
-  debateId   Int
+  debateId   Int      
   voteBy     String   @db.VarChar(50)
   voteTo     String   @db.VarChar(50)
   created_at DateTime @db.DateTime(0)
